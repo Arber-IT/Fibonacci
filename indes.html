@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Universe Fibonacci</title>
+        <!-- Import Chart for graphics -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
+        <style>
+            :root {
+                --primary: #4f46e5;
+                --secondary: #06b6d4;
+                --background: #f8fafc;
+                --card: #ffffff;
+                --text: #0f172a;
+            }
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: var(--background);
+                color: var(--text);
+                margin: 0;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .container {
+                max-width: 900px;
+                width: 100%;
+            }
+
+            header {
+                text-align: center;
+                margin-bottom: 40px;
+            }
+
+            h1 {
+                color: var(--primary);
+                margin-bottom: 5px;
+            }
+            p.subtitle {
+                color: #64748b;
+                font-size: 1.1rem;
+                margin-top: 0;
+            }
+
+            .card {
+                background: var(--card);
+                padding: 30px;
+                border-radius: 16px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+                margin-bottom: 30px;
+            }
+
+            h2 {
+                color: var(--text);
+                border-bottom: 2px solid #e2e8f0;
+                padding-bottom: 10px;
+                margin-top: 0;
+            }
+
+            .formula {
+                background: #f1f5f9;
+                padding: 15px;
+                border-left: 4px solid var(--primary);
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 1.2rem;
+                font-weight: bold;
+                text-align: center;
+                margin: 20px 0;
+            }
+
+            .input-group {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            input[type="number"] {
+                flex: 1;
+                padding: 12px;
+                border: 2px solid #cbd5e1;
+                border-radius: 8px;
+                font-size: 1rem;
+                outline: none;
+                transition: border-color 0.2s;
+            }
+
+            input[type="number"]:focus {
+                border-color: var(--primary);
+            }
+
+            button {
+                background: var(--primary);
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+
+            button:hover {
+                background: #4338ca;
+            }
+
+            .chart-container {
+                position: relative;
+                height: 350px;
+                width: 100%;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="container">
+            <header>
+                <h1>Fibonacci Array and Formula </h1>
+                <p class="subtitle">a visual incursion in natures mathematics</p>
+            </header>
+
+            <!-- Section 1: Formula and Graphic Standard -->
+            <section class="card">
+                <h2>Formula Fibonacci</h2>
+                <p>Every number of the array is the sum of the previous 2 numbers, beginning at 0 and 1.</p>
+                <div class="formula">
+                    F(n) = F(n-1) + F(n-2)
+                </div>
+                <p>Who: <em>F(0) = 0, F(1) = 1, and n ≥ 2</em></p>
+
+                <div class="chart-container">
+                    <canvas id="fibStandardChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Section 2: Searching coordinates and graphic dynamic -->
+            <section class="card">
+                <h2>Generate Personalized Graphic (Coordinates)</h2>
+                <p>Insert a value <strong>N</strong> (nr of terms) for map specific coordinates on graphic: axes X represents index (n), axes Y is the value Fibonacci F(n).</p>
+
+                <div class="input-group">
+                    <input type="number" id="fibInput" min="1" max="30" value="8" placeholder="Insert terms number (ex: 8)">
+                    <button onclick="generateGraficDynamic()">Generate Graphic</button>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="fibDynamicChart"></canvas>
+                </div>
+            </section>
+        </div>
+
+        <script>
+            // --- FUNCTION: Generation Fibonacci on N terms ---
+            function generateFibonacci(n) {
+                let sir = [0, 1];
+                if (n <= 1)
+                    return sir.slice(0, n + 1);
+                for (let i = 2; i < n; i++) {
+                    sir.push(sir[i - 1] + sir[i - 2]);
+                }
+                return sir;
+            }
+
+            // --- 1. CONFIGURATION GRAPHIC STANDARD ---
+            const termeniStandard = 10;
+            const dateStandard = generateFibonacci(termeniStandard);
+            const eticheteStandard = Array.from({length: termeniStandard}, (_, i) => `F(${i})`);
+
+            const ctxStandard = document.getElementById('fibStandardChart').getContext('2d');
+            new Chart(ctxStandard, {
+                type: 'line',
+                data: {
+                    labels: eticheteStandard,
+                    datasets: [{
+                            label: 'Value Fibonacci Array',
+                            data: dateStandard,
+                            borderColor: '#4f46e5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3, // curved line
+                            pointBackgroundColor: '#4f46e5',
+                            pointRadius: 5
+                        }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {position: 'top'}
+                    }
+                }
+            });
+
+            // --- 2. CONFIGURATION GRAPHIC DYNAMIC ---
+            let dynamicChart = null; // global variable for graphic recreation
+
+            function generateGraficDynamic() {
+                const inputVal = parseInt(document.getElementById('fibInput').value);
+
+                if (isNaN(inputVal) || inputVal < 1) {
+                    alert("A single number than 0 is valid!");
+                    return;
+                }
+                if (inputVal > 30) {
+                    alert("Number is too big for visualization! Try a value under 30.");
+                    return;
+                }
+
+                const dateDinamice = generateFibonacci(inputVal);
+                const eticheteDinamice = Array.from({length: inputVal}, (_, i) => `N=${i}`);
+
+                const ctxDinamic = document.getElementById('fibDynamicChart').getContext('2d');
+
+                // if graphics exists, delete to redesign from zero
+                if (dynamicChart) {
+                    dynamicChart.destroy();
+                }
+
+                dynamicChart = new Chart(ctxDinamic, {
+                    type: 'bar', // grafic chart
+                    data: {
+                        labels: eticheteDinamice,
+                        datasets: [{
+                                label: `Coordinates Fibonacci for first ${inputVal} terms`,
+                                data: dateDinamice,
+                                backgroundColor: 'rgba(6, 182, 212, 0.7)',
+                                borderColor: '#06b6d4',
+                                borderWidth: 2,
+                                borderRadius: 6
+                            }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            //  dynamic graphic generation 
+            generateGraficDynamic();
+        </script>
+
+    </body>
+</html>
+
